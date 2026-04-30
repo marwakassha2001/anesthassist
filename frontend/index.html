@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <!-- React + Babel via CDN — no npm/Vite needed -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.development.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.development.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
@@ -24,13 +23,20 @@
     html { scroll-behavior:smooth; }
     body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
     ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px}
+
+    /* Header */
     .hdr { position:sticky; top:0; z-index:200; border-bottom:1px solid var(--border); height:56px; padding:0 24px; display:flex; align-items:center; justify-content:space-between; background:rgba(13,15,18,.92); backdrop-filter:blur(14px); }
     .hdr-brand { display:flex; align-items:center; gap:10px; }
     .hdr-logo { width:30px; height:30px; background:var(--accent); border-radius:7px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:.72rem; color:#0d0f12; }
     .hdr-name { font-family:'Syne',sans-serif; font-weight:700; font-size:.95rem; }
     .hdr-badge { font-family:'IBM Plex Mono',monospace; font-size:.62rem; padding:3px 8px; background:var(--accent-dim); border:1px solid var(--accent-b); border-radius:4px; color:var(--accent); letter-spacing:.05em; }
-    .layout { display:grid; grid-template-columns:220px 1fr 320px; height:calc(100vh - 56px); }
-    @media(max-width:900px){.layout{grid-template-columns:1fr;height:auto}.col-history{display:none}}
+
+    /* Layout */
+    .layout { display:grid; grid-template-columns:200px 1fr 480px; height:calc(100vh - 56px); }
+    @media(max-width:1100px){ .layout{ grid-template-columns:180px 1fr 420px; } }
+    @media(max-width:800px){ .layout{ grid-template-columns:1fr; height:auto; } .col-history{ display:none; } }
+
+    /* Left: History list */
     .col-history { border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; background:var(--surface); }
     .hist-head { padding:16px; border-bottom:1px solid var(--border); flex-shrink:0; }
     .hist-head-title { font-family:'Syne',sans-serif; font-weight:700; font-size:.82rem; margin-bottom:2px; }
@@ -50,6 +56,8 @@
     .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
     .dot.ga { background:var(--danger); } .dot.ok { background:var(--success); }
     .hist-empty { padding:24px 12px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--dim); line-height:1.7; }
+
+    /* Center: Form */
     .col-form { overflow-y:auto; padding:28px 24px; }
     .slabel { font-family:'IBM Plex Mono',monospace; font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
     .slabel::after { content:''; flex:1; height:1px; background:var(--border); }
@@ -69,10 +77,14 @@
     .chip:hover { border-color:var(--border-hi); color:var(--text); }
     .chip.on { background:var(--accent-dim); border-color:var(--accent-b); color:var(--accent); }
     .chip.on-yes { background:rgba(248,113,113,.1); border-color:rgba(248,113,113,.35); color:#f87171; }
+
+    /* Right: Result + Patient Profile */
     .col-result { border-left:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; padding:20px; background:var(--surface); gap:14px; }
-    .warn-box { background:var(--warn-dim); border:1px solid rgba(251,191,36,.2); border-radius:9px; padding:12px 14px; font-size:.75rem; color:#a38b3e; line-height:1.6; }
+    .warn-box { background:var(--warn-dim); border:1px solid rgba(251,191,36,.2); border-radius:9px; padding:12px 14px; font-size:.75rem; color:#a38b3e; line-height:1.6; flex-shrink:0; }
     .warn-box strong { color:var(--warn); }
-    .result-card { border-radius:10px; border:1px solid; padding:18px; animation:fadeUp .3s ease; }
+
+    /* Prediction result */
+    .result-card { border-radius:10px; border:1px solid; padding:18px; animation:fadeUp .3s ease; flex-shrink:0; }
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .result-card.ga    { background:var(--danger-dim);  border-color:var(--danger-b); }
     .result-card.no-ga { background:var(--success-dim); border-color:var(--success-b); }
@@ -90,36 +102,55 @@
     .bar-track { height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; }
     .bar-fill { height:100%; border-radius:3px; transition:width .6s cubic-bezier(.4,0,.2,1); }
     .bar-fill.ga-bar { background:var(--danger); } .bar-fill.ok-bar { background:var(--success); }
-    .detail-box { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .detail-head { padding:12px 16px; background:var(--surface2); border-bottom:1px solid var(--border); }
-    .detail-pid { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--accent); }
-    .detail-name { font-family:'Syne',sans-serif; font-size:.9rem; font-weight:600; margin-top:2px; }
-    .detail-badge { display:inline-block; margin-top:4px; font-family:'IBM Plex Mono',monospace; font-size:.65rem; padding:2px 8px; background:var(--accent-dim); border:1px solid var(--accent-b); border-radius:4px; color:var(--accent); }
-    .visit-list { max-height:200px; overflow-y:auto; }
-    .visit-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--border); font-size:.78rem; }
-    .visit-item:last-child { border-bottom:none; }
-    .visit-label { flex:1; color:var(--text); }
-    .visit-time { font-family:'IBM Plex Mono',monospace; font-size:.62rem; color:var(--muted); }
-    .idle-box { border:1px dashed var(--border); border-radius:10px; padding:32px 16px; text-align:center; }
+
+    /* ── Patient Profile Table ── */
+    .profile-box { border:1px solid var(--border); border-radius:10px; overflow:hidden; flex-shrink:0; }
+    .profile-header { padding:14px 16px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:flex-start; justify-content:space-between; }
+    .profile-header-left {}
+    .profile-pid  { font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--accent); margin-bottom:2px; }
+    .profile-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+    .profile-badge { font-family:'IBM Plex Mono',monospace; font-size:.65rem; padding:3px 9px; background:var(--accent-dim); border:1px solid var(--accent-b); border-radius:4px; color:var(--accent); }
+
+    /* table */
+    .profile-table-wrap { overflow-x:auto; max-height:400px; overflow-y:auto; }
+    table { width:100%; border-collapse:collapse; font-size:.75rem; }
+    thead { position:sticky; top:0; z-index:10; }
+    thead tr { background:var(--surface3); }
+    th { padding:9px 10px; text-align:left; font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); white-space:nowrap; }
+    td { padding:9px 10px; border-bottom:1px solid var(--border); color:var(--text); white-space:nowrap; vertical-align:middle; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:var(--surface2); }
+    .td-date { font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); }
+    .td-decision { font-weight:600; }
+    .td-decision.ga { color:var(--danger); }
+    .td-decision.ok { color:var(--success); }
+    .td-conf { font-family:'IBM Plex Mono',monospace; color:var(--muted); }
+    .tag { display:inline-block; padding:2px 6px; border-radius:4px; font-size:.65rem; font-family:'IBM Plex Mono',monospace; }
+    .tag.yes { background:rgba(248,113,113,.15); color:#f87171; }
+    .tag.no  { background:var(--surface3); color:var(--muted); }
+    .tag.beh { background:var(--accent-dim); color:var(--accent); margin:1px; }
+
+    /* idle */
+    .idle-box { border:1px dashed var(--border); border-radius:10px; padding:32px 16px; text-align:center; flex-shrink:0; }
     .idle-icon { font-size:2rem; opacity:.2; margin-bottom:8px; }
     .idle-text { font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--dim); line-height:1.7; }
-    .btn-primary { width:100%; padding:13px; background:var(--accent); color:#0d0f12; border:none; border-radius:9px; font-family:'Syne',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+    /* buttons */
+    .btn-primary { width:100%; padding:13px; background:var(--accent); color:#0d0f12; border:none; border-radius:9px; font-family:'Syne',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:8px; flex-shrink:0; }
     .btn-primary:hover { background:#81d4fa; }
     .btn-primary:disabled { background:#2a3a44; color:var(--muted); cursor:not-allowed; }
-    .btn-ghost { width:100%; padding:9px; background:transparent; color:var(--muted); border:1px solid var(--border); border-radius:9px; font-family:'IBM Plex Sans',sans-serif; font-size:.82rem; cursor:pointer; transition:all .15s; }
+    .btn-ghost { width:100%; padding:9px; background:transparent; color:var(--muted); border:1px solid var(--border); border-radius:9px; font-family:'IBM Plex Sans',sans-serif; font-size:.82rem; cursor:pointer; transition:all .15s; flex-shrink:0; }
     .btn-ghost:hover { border-color:var(--border-hi); color:var(--text); }
-    .error-box { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); border-radius:7px; padding:10px 14px; font-size:.78rem; color:#f87171; }
+    .error-box { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); border-radius:7px; padding:10px 14px; font-size:.78rem; color:#f87171; flex-shrink:0; }
     .spinner { width:14px; height:14px; border:2px solid rgba(13,15,18,.3); border-top-color:#0d0f12; border-radius:50%; animation:spin .6s linear infinite; flex-shrink:0; display:inline-block; }
     @keyframes spin { to { transform:rotate(360deg); } }
   </style>
 </head>
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
     const { useState, useEffect, useCallback } = React;
-
-    const API = "https://anesthassist.onrender.com";
+    const API = "http://127.0.0.1:8000";
 
     const BEHAVIORS = [
       { field: "calm",               label: "😌 Calm"               },
@@ -131,9 +162,9 @@
     ];
 
     const ICDAS_LABELS = ["Sound","Very early","Early enamel","Mid enamel","Deep enamel","Dentin involvement","Extensive dentin"];
+    const ASA_LABELS   = ["","Healthy","Mild systemic","Severe systemic","Life-threatening"];
 
     const genId = () => "PT-" + Math.random().toString(36).slice(2, 7).toUpperCase();
-
     const blank = () => ({
       patient_id: genId(), patient_name: "",
       age: "", asa: "", icdas_max: "", nombre_de_dents_severes: "",
@@ -142,6 +173,90 @@
       anxious: 0, extremely_agitated: 0, uncooperative: 0,
     });
 
+    /* ── Patient Profile Table ── */
+    function PatientProfile({ selected }) {
+      if (!selected) return null;
+      const visits = [...selected.visits].reverse();
+
+      const behaviors = ["calm","agitated","short_attention","anxious","extremely_agitated","uncooperative"];
+      const behaviorLabels = {
+        calm:"Calm", agitated:"Agitated", short_attention:"Short Att.",
+        anxious:"Anxious", extremely_agitated:"Ext. Agitated", uncooperative:"Uncooperative"
+      };
+
+      return (
+        <div className="profile-box">
+          <div className="profile-header">
+            <div className="profile-header-left">
+              <div className="profile-pid">{selected.patient_id}</div>
+              <div className="profile-name">{selected.patient_name || "Unknown Patient"}</div>
+            </div>
+            <span className="profile-badge">{selected.visits.length} visit{selected.visits.length !== 1 ? "s" : ""}</span>
+          </div>
+
+          <div className="profile-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Age</th>
+                  <th>ASA</th>
+                  <th>ICDAS</th>
+                  <th>Teeth</th>
+                  <th>Infection</th>
+                  <th>Prev. Fail</th>
+                  <th>Behaviour</th>
+                  <th>Decision</th>
+                  <th>Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visits.map((v, i) => {
+                  const isGA   = v.decision === 1;
+                  const conf   = Math.round(Math.max(v.probability_ga, v.probability_no_ga) * 100);
+                  const inp    = v.inputs || {};
+                  const behs   = behaviors.filter(b => inp[b] === 1);
+                  const visitN = selected.visits.length - i;
+                  return (
+                    <tr key={i}>
+                      <td style={{color:"var(--muted)",fontFamily:"IBM Plex Mono,monospace"}}>{visitN}</td>
+                      <td className="td-date">{v.timestamp.slice(0,10)}</td>
+                      <td>{inp.age ?? "—"}</td>
+                      <td>{inp.asa ? `${inp.asa} — ${ASA_LABELS[inp.asa]}` : "—"}</td>
+                      <td>{inp.icdas_max !== undefined ? `${inp.icdas_max} — ${ICDAS_LABELS[inp.icdas_max]}` : "—"}</td>
+                      <td>{inp.nombre_de_dents_severes ?? "—"}</td>
+                      <td>
+                        <span className={`tag ${inp.presence_of_infection ? "yes" : "no"}`}>
+                          {inp.presence_of_infection ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`tag ${inp.previous_failed_dental_attempts ? "yes" : "no"}`}>
+                          {inp.previous_failed_dental_attempts ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        {behs.length === 0
+                          ? <span style={{color:"var(--dim)"}}>None</span>
+                          : behs.map(b => <span key={b} className="tag beh">{behaviorLabels[b]}</span>)
+                        }
+                      </td>
+                      <td className={`td-decision ${isGA ? "ga" : "ok"}`}>
+                        {isGA ? "🔴 GA Required" : "🟢 No GA"}
+                      </td>
+                      <td className="td-conf">{conf}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Main App ── */
     function App() {
       const [form,     setForm]     = useState(blank());
       const [loading,  setLoading]  = useState(false);
@@ -153,10 +268,7 @@
       const [activeId, setActiveId] = useState(null);
 
       const fetchPatients = useCallback(async () => {
-        try {
-          const r = await fetch(`${API}/patients`);
-          if (r.ok) setPatients(await r.json());
-        } catch {}
+        try { const r = await fetch(`${API}/patients`); if (r.ok) setPatients(await r.json()); } catch {}
       }, []);
 
       useEffect(() => { fetchPatients(); }, [fetchPatients]);
@@ -219,15 +331,11 @@
 
       const handleSelectPatient = async (pid) => {
         setActiveId(pid);
-        try {
-          const r = await fetch(`${API}/patients/${pid}`);
-          if (r.ok) setSelected(await r.json());
-        } catch {}
+        try { const r = await fetch(`${API}/patients/${pid}`); if (r.ok) setSelected(await r.json()); } catch {}
       };
 
       const handleReset = () => {
-        setForm(blank()); setResult(null);
-        setError(""); setActiveId(null); setSelected(null);
+        setForm(blank()); setResult(null); setError(""); setActiveId(null); setSelected(null);
       };
 
       const filtered = patients.filter(p =>
@@ -250,7 +358,7 @@
 
           <div className="layout">
 
-            {/* LEFT */}
+            {/* LEFT: patient list */}
             <aside className="col-history">
               <div className="hist-head">
                 <div className="hist-head-title">Patient Memory</div>
@@ -277,7 +385,7 @@
               </div>
             </aside>
 
-            {/* CENTER */}
+            {/* CENTER: form */}
             <main className="col-form">
               <div className="slabel">00 · Patient Identity</div>
               <div className="card">
@@ -364,19 +472,20 @@
               </div>
             </main>
 
-            {/* RIGHT */}
+            {/* RIGHT: result + patient profile table */}
             <aside className="col-result">
               <div className="warn-box">
                 <strong>⚠ Clinical Use Only.</strong> This tool supports — but does not replace — clinical judgment.
               </div>
 
+              {/* Prediction result */}
               {result ? (
                 <div className={`result-card ${result.decision === 1 ? "ga" : "no-ga"}`}>
                   <div className="r-icon">{result.decision === 1 ? "🔴" : "🟢"}</div>
                   <div className="r-verdict">{result.label}</div>
                   <div className="r-meta">
                     {result.patient_id}{result.patient_name ? ` · ${result.patient_name}` : ""}<br />
-                    Visit #{result.visit_count} · {result.timestamp.replace("T", " ")}
+                    Visit #{result.visit_count} · {result.timestamp.replace("T"," ")}
                   </div>
                   <div className="prob-row">
                     <div className="prob-item">
@@ -402,26 +511,8 @@
                 </div>
               )}
 
-              {selected && (
-                <div className="detail-box">
-                  <div className="detail-head">
-                    <div className="detail-pid">{selected.patient_id}</div>
-                    {selected.patient_name && <div className="detail-name">{selected.patient_name}</div>}
-                    <span className="detail-badge">{selected.visits.length} visit{selected.visits.length !== 1 ? "s" : ""}</span>
-                  </div>
-                  <div className="visit-list">
-                    {[...selected.visits].reverse().map((v, i) => (
-                      <div className="visit-item" key={i}>
-                        <span className={`dot ${v.decision === 1 ? "ga" : "ok"}`} />
-                        <span className="visit-label">
-                          {v.decision === 1 ? "GA Required" : "No GA"} · {Math.round(Math.max(v.probability_ga, v.probability_no_ga) * 100)}%
-                        </span>
-                        <span className="visit-time">{v.timestamp.slice(0, 10)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Full patient profile table */}
+              <PatientProfile selected={selected} />
 
               {error && <div className="error-box">⚠ {error}</div>}
 
