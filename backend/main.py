@@ -23,16 +23,19 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origin_regex=".*",
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ── Load model & scaler ───────────────────────────────────────────────────────
-BASE = os.path.dirname(__file__)
+BASE   = os.path.dirname(__file__)
 model  = joblib.load(os.path.join(BASE, "model.pkl"))
 scaler = joblib.load(os.path.join(BASE, "scaler.pkl"))
 
-SCALED_COLS = ["icdas_max", "nombre_de_dents_severes", "asa"]
+SCALED_COLS   = ["icdas_max", "nombre_de_dents_severes", "asa"]
 FEATURE_ORDER = [
     "age", "asa", "icdas_max", "nombre_de_dents_severes",
     "calm", "agitated", "short_attention", "anxious",
