@@ -331,7 +331,35 @@
 
       const handleSelectPatient = async (pid) => {
         setActiveId(pid);
-        try { const r = await fetch(`${API}/patients/${pid}`); if (r.ok) setSelected(await r.json()); } catch {}
+        setResult(null);
+        setError("");
+        try {
+          const r = await fetch(`${API}/patients/${pid}`);
+          if (r.ok) {
+            const data = await r.json();
+            setSelected(data);
+            // Auto-fill form with last visit inputs
+            if (data.visits && data.visits.length > 0) {
+              const last = data.visits[data.visits.length - 1].inputs;
+              setForm({
+                patient_id:                      data.patient_id,
+                patient_name:                    data.patient_name || "",
+                age:                             last.age ?? "",
+                asa:                             last.asa ?? "",
+                icdas_max:                       last.icdas_max ?? "",
+                nombre_de_dents_severes:         last.nombre_de_dents_severes ?? "",
+                presence_of_infection:           last.presence_of_infection ?? null,
+                previous_failed_dental_attempts: last.previous_failed_dental_attempts ?? null,
+                calm:                            last.calm ?? 0,
+                agitated:                        last.agitated ?? 0,
+                short_attention:                 last.short_attention ?? 0,
+                anxious:                         last.anxious ?? 0,
+                extremely_agitated:              last.extremely_agitated ?? 0,
+                uncooperative:                   last.uncooperative ?? 0,
+              });
+            }
+          }
+        } catch {}
       };
 
       const handleReset = () => {
