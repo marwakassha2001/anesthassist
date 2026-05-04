@@ -17,7 +17,7 @@ from typing import Optional
 app = FastAPI(
     title="General Anesthesia Decision Support",
     description="Predicts whether a patient needs general anesthesia for dental treatment.",
-    version="2.0.0"
+    version="3.0.0"
 )
 
 app.add_middleware(
@@ -30,7 +30,6 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# ── Load model & scaler ───────────────────────────────────────────────────────
 BASE   = os.path.dirname(__file__)
 model  = joblib.load(os.path.join(BASE, "model.pkl"))
 scaler = joblib.load(os.path.join(BASE, "scaler.pkl"))
@@ -40,10 +39,10 @@ FEATURE_ORDER = [
     "age", "asa", "icdas_max", "nombre_de_dents_severes",
     "calm", "agitated", "short_attention", "anxious",
     "extremely_agitated", "uncooperative",
+    "special_needs", "previous_general_anesthesia",
     "presence_of_infection", "previous_failed_dental_attempts",
 ]
 
-# ── Patient memory ────────────────────────────────────────────────────────────
 MEMORY_PATH = os.path.join(BASE, "patients.json")
 
 def load_memory() -> dict:
@@ -56,10 +55,9 @@ def save_memory(data: dict):
     with open(MEMORY_PATH, "w") as f:
         json.dump(data, f, indent=2)
 
-# ── Schemas ───────────────────────────────────────────────────────────────────
 class PatientInput(BaseModel):
     patient_id: str                      = Field(..., description="Unique patient identifier")
-    patient_name: Optional[str]          = Field(None, description="Optional patient name")
+    patient_name: Optional[str]          = Field(None)
     age: float                           = Field(..., ge=0, le=120)
     asa: int                             = Field(..., ge=1, le=4)
     icdas_max: int                       = Field(..., ge=0, le=6)
@@ -70,6 +68,8 @@ class PatientInput(BaseModel):
     anxious: int                         = Field(..., ge=0, le=1)
     extremely_agitated: int              = Field(..., ge=0, le=1)
     uncooperative: int                   = Field(..., ge=0, le=1)
+    special_needs: int                   = Field(..., ge=0, le=1)
+    previous_general_anesthesia: int     = Field(..., ge=0, le=1)
     presence_of_infection: int           = Field(..., ge=0, le=1)
     previous_failed_dental_attempts: int = Field(..., ge=0, le=1)
 
@@ -91,7 +91,6 @@ class PatientSummary(BaseModel):
     last_decision: int
     last_label: str
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
 @app.post("/predict", response_model=PredictionResult)
 def predict(patient: PatientInput):
     data = pd.DataFrame([patient.dict()])[FEATURE_ORDER]
@@ -137,8 +136,7 @@ def list_patients():
     result = []
     for pid, data in memory.items():
         visits = data["visits"]
-        if not visits:
-            continue
+        if not visits: continue
         last = visits[-1]
         result.append(PatientSummary(
             patient_id=pid,
@@ -171,4 +169,4 @@ def delete_patient(patient_id: str):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model": "LogisticRegression", "version": "2.0.0"}
+    return {"status": "ok", "model": "LogisticRegression", "version": "3.0.0"}
